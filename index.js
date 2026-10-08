@@ -1,4 +1,4 @@
-import bootstrap from "./src/bootstrap.js"
+import bootstrap from "./src/bootstrap.js";
 
 
 

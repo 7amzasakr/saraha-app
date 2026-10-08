@@ -3,7 +3,8 @@ import { errorRes } from "../../utils/error.handel.js"
 import jwt from "jsonwebtoken"
 import { decodeToken } from "../../middlewares/auth.midddleware.js"
 import { tokenEnum } from "../../middlewares/auth.midddleware.js"
-
+import { createHash } from "../../utils/security/hach.js"
+import { compareHash } from "../../utils/security/hach.js"
 
 
 export const signupService = async ({fullname , email , gender,password , phone , bio ,age , userName })=>{
@@ -27,7 +28,7 @@ export const signupService = async ({fullname , email , gender,password , phone 
     }
 
     const user = await userModel.create({
-        fullname,email,password,gender,phone,bio, age , userName
+        fullname,email,password : await createHash(password),gender,phone,bio, age , userName
     })
 
     return {
@@ -45,7 +46,6 @@ export const loginService = async (identifier,password)=>{
             {userName : identifier},
         ]
     })
-
     if(!user){
         errorRes({
             msg : "invalid credentials",
@@ -53,7 +53,10 @@ export const loginService = async (identifier,password)=>{
         })
     }
 
-    if(user.password != password){
+    
+    const isPasswordMatch = await compareHash(password,user.password)
+
+    if(!isPasswordMatch){
          errorRes({
             msg : "invalid credentials",
             statusCode : 400

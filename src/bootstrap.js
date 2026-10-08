@@ -24,7 +24,8 @@ const bootstrap = async()=>{
         const statusCode = err.cause?.statusCode || 500
         res.status(statusCode).json({
             errMsg : err.message,
-            status : statusCode
+            status : statusCode,
+            errOptions : err.cause?.options
         })
     })
 
