@@ -12,11 +12,21 @@ export const signupScema = {
             age: z.number().optional(),
             gender : z.enum(GenderEnum),
             userName :z.string(),
-            bio : z.string().optional()
-    }),
-    query:z.strictObject({
-        id:z.string()
-    
+            bio : z.string().optional(),
+            confirmPassword : z.string()
+    })
+    .refine((arg)=>arg.password == arg.confirmPassword,{error : "password missmatch",
+        path : ["password","confirmPassword"]
     })
 }
 
+export const resetPasswordSchema = {
+    body : z.strictObject({
+        email:z.email(),
+        otp : z.string().min(6).max(6),
+        password: z.string(),
+        confirmPassword : z.string()
+    }).refine((arg)=>arg.password == arg.confirmPassword,{error : "password missmatch",
+        path : ["password","confirmPassword"]
+    })
+}

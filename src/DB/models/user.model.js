@@ -1,5 +1,28 @@
 import {Schema,model} from "mongoose";
 import { GenderEnum, ProviderEnum, RoleEnum } from "../../modules/User/user.types.js";
+import {encryption,decryption} from "../../utils/security/encryption.js"
+import { maxLength, minLength, required } from "zod/mini";
+
+const otpSchema = new Schema({
+    code:{
+        type : String ,
+        required : true
+        
+    },
+    expireIn : {
+        type : Date,
+        default : Date.now() +5*60*1000
+    }
+
+},{
+    _id:false
+})
+
+otpSchema.index("expireIn",{
+    expireAfterSeconds : 0,
+
+})
+
 
 const userSchema = new Schema(
     {
@@ -13,7 +36,12 @@ const userSchema = new Schema(
         },
         phone : {
             type : String,
-            required:true
+            set(value){
+                return encryption(value);
+            },
+            get(value){
+                return decryption(value);
+            }
         },
         email :{
             type  :String,
@@ -22,7 +50,9 @@ const userSchema = new Schema(
         },
         password: {
             type  :String,
-            required:true
+            required:function(){
+                this.provider== ProviderEnum.system? true: false
+            }
         },
         age : Number,
          profileImage : {
@@ -45,13 +75,16 @@ const userSchema = new Schema(
         bio : String,
         userName:{
             type : String,
-            required : true,
+            required : function(){
+                this.provider== ProviderEnum.system? true: false
+            },
             unique : true
         },
         confirmedAt : {
             type : Date
         },
-        blockedAt :Date
+        blockedAt :Date,
+        otp : otpSchema
     },{
         timestamps : true,
         strict  :true,
