@@ -1,12 +1,13 @@
 import express from "express"
 
-import setRouter , {routes as userRoutes} from "./modules/User/user.controller.js"
+import userRouter , {routes as userRoutes} from "./modules/User/user.controller.js"
 import { DBConnection } from "./DB/DB.connection.js"
 import { userModel } from "./DB/models/user.model.js"
 import cors from "cors"
 import { sendEmail } from "./utils/security/email/sendEmail.js"
 import { emailTemplate } from "./utils/security/email/emailTemplate.js"
-
+import { redisClient } from "./DB/redis.connect.js"
+import messageRouter,{routes as messageRoutes} from './modules/message/message.controller.js'
 
 
 
@@ -20,8 +21,9 @@ const bootstrap = async()=>{
     app.use(cors({
         origin:"*"
     }))
-    app.use(userRoutes.base,setRouter)
-    
+    app.use(userRoutes.base,userRouter)
+    app.use(messageRoutes.base,messageRouter)
+    //await redisClient.set("t", "h")
     
 
     app.use((err,req,res,next)=>{

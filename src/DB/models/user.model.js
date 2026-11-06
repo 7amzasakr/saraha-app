@@ -1,7 +1,6 @@
-import {Schema,model} from "mongoose";
+import { Schema, model } from "mongoose";
 import { GenderEnum, ProviderEnum, RoleEnum } from "../../modules/User/user.types.js";
-import {encryption,decryption} from "../../utils/security/encryption.js"
-import { maxLength, minLength, required } from "zod/mini";
+import { decryption, encryption } from "../../utils/security/encryption.js";
 
 const otpSchema = new Schema({
     code:{
@@ -84,7 +83,7 @@ const userSchema = new Schema(
             type : Date
         },
         blockedAt :Date,
-        otp : otpSchema
+        //otp : otpSchema
     },{
         timestamps : true,
         strict  :true,

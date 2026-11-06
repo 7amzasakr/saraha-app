@@ -1,13 +1,11 @@
 import { Router } from "express";
-import {successRes}from "../../utils/success.res.js"
-import { loginService, signupService ,refreshToken, googlelogin,confirmEmail, forgetPassSendOtp, resetPassword} from "./user.service.js";
-import { auth, authorization, decodeToken } from "../../middlewares/auth.midddleware.js";
-import { uploadFile } from "../../utils/multer.js";
-import { signupScema } from "./user.validation.js";
-import { errorRes } from "../../utils/error.handel.js";
+import { auth } from "../../middlewares/auth.midddleware.js";
 import { validation } from "../../middlewares/validation.middlewate.js";
-import {resetPasswordSchema} from "../User/user.validation.js"
-import multer from "multer";
+import { uploadFile } from "../../utils/multer.js";
+import { successRes } from "../../utils/success.res.js";
+import { resetPasswordSchema } from "../User/user.validation.js";
+import { logout,confirmEmail, forgetPassSendOtp, googlelogin, loginService, logoutFromAllDevices, refreshToken, resentConfirmEmailOtp, resetPassword, signupService } from "./user.service.js";
+import { signupScema } from "./user.validation.js";
 const router = Router();
 
 export const routes ={
@@ -21,6 +19,9 @@ export const routes ={
     forgetPass : "/forget-password", //PATCH
     resetPassword : "/reset-password", // PATCH
     uploadFile  :"/upload-file", // GET
+    resentConfirmEmailOtp : "resend-confirm-otp", //POST
+    logoutFromAllDevices : "/logout-from-all-devices", //POST
+    logoutFromoneDevice : "/logout-from-one-device", //POST
 
 }
 
@@ -90,11 +91,6 @@ router.patch(routes.forgetPass,async(req,res)=>{
     })
 })
 
-
-// router.patch("/chexk-email",async(req,res)=>{
-//     const {email,otp} = req.body
-// })
-
 router.patch(routes.resetPassword,validation(resetPasswordSchema),async(req,res)=>{
     const {email,otp ,password } = req.body
 
@@ -112,8 +108,28 @@ router.get(routes.uploadFile,auth,uploadFile("general").single("image"),(req,res
     successRes({res})
 })
 
+router.post(routes.resentConfirmEmailOtp,async(req,res)=>{
+    const {email}= req.body
+    const {data} = await resentConfirmEmailOtp(email)
 
+    successRes({res,data})
+})
 
+router.post(routes.logoutFromoneDevice,auth,async(req,res)=>{
+    const userId = req.user._id
+    const jti = req.jti 
+    await logout(userId,jti)
+    return successRes({
+        res
+    })
+})
 
+router.post(routes.logoutFromAllDevices,auth,async(req,res)=>{
+    const userId = req.user._id
+    await logoutFromAllDevices(userId)
+    return successRes({
+        res
+    })
+})
 
 export default router
