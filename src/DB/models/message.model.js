@@ -9,9 +9,10 @@ const messageScema = new Schema(
     {
         content :{
             type :String,
-            require : function (){
+            required : function (){
                 this.images?.length?false:true
-            },
+            }
+        },
             images:{
                 type : [String]
             },
@@ -20,8 +21,6 @@ const messageScema = new Schema(
                 required:true,
                 ref:"User"
             }
-
-        }
     },{
         timestamps : true,
         strict  :true,

@@ -293,9 +293,10 @@ export const confirmEmail = async(email,otp)=>{
     }
     
     const hashedOtp = await redisClient.get(confrimEmailKey(user._id))
-    if(!otp){
+    if(!otp || !hashedOtp){
         errorRes({
-            msg : "invalid ot expired otp"
+            msg : "invalid ot expired otp",
+            statusCode : 400
         })
     }
 

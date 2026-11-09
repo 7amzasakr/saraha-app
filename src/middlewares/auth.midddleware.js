@@ -13,7 +13,7 @@ export const tokenEnum = {
 export const auth = async(req,res,next)=>{
     const {user,jti } = await decodeToken({authorization:req.headers.authorization})
     req.user = user
-    req.tokenJti = jti
+    req.jti = jti
     next()
 
 }
